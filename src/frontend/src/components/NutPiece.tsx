@@ -2,6 +2,7 @@ import type React from "react";
 import { COLOR_MAP, type NutColor } from "../game/levelGenerator";
 
 interface NutPieceProps {
+  isComplete?: boolean;
   color: NutColor;
   size?: number;
   isSelected?: boolean;
@@ -13,46 +14,59 @@ interface NutPieceProps {
 
 const NutPiece: React.FC<NutPieceProps> = ({
   color,
-  size = 48,
+  size = 56,
   isSelected = false,
   isFloating = false,
   isUnscrewing = false,
   isScrewingIn = false,
+  isComplete = false,
   style,
 }) => {
   const info = COLOR_MAP[color];
-  const holeSize = Math.round(size * 0.36);
-  const innerRingSize = Math.round(size * 0.65);
 
-  // Hex clip-path: 6-sided polygon (flat-top orientation)
+  // Flat horizontal hex nut — wider than tall (side view on rod)
+  const nutW = size;
+  const nutH = Math.round(size * 0.4);
+
+  // Hole in the center — oval shaped (rod passes through)
+  const holeW = Math.round(nutW * 0.28);
+  const holeH = Math.round(nutH * 0.6);
+
+  // Flat-top hex polygon on the WIDE axis (pointing left/right)
+  // Points: left-mid, top-left, top-right, right-mid, bottom-right, bottom-left
   const hexClip =
-    "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
+    "polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%)";
 
   let transform = "scale(1)";
   let transition = "transform 0.18s cubic-bezier(0.34,1.56,0.64,1)";
   let animation: string | undefined;
 
   if (isUnscrewing) {
-    animation = "bolt-unscrew 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards";
+    animation = "nut-unscrew 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards";
     transform = "scale(1)";
     transition = "none";
   } else if (isScrewingIn) {
-    animation = "bolt-screwIn 0.38s cubic-bezier(0.34,1.56,0.64,1) forwards";
+    animation = "nut-screwIn 0.38s cubic-bezier(0.34,1.56,0.64,1) forwards";
     transform = "scale(1)";
     transition = "none";
   } else if (isFloating) {
-    transform = "translateY(-12px) scale(1.18)";
+    transform = "translateY(-16px) scale(1.14)";
   } else if (isSelected) {
-    transform = "translateY(-6px) scale(1.1)";
+    transform = "translateY(-8px) scale(1.08)";
+  } else if (isComplete) {
+    animation = "nut-complete-shine 1.2s ease-in-out infinite";
+    transform = "scale(1)";
+    transition = "none";
   }
 
-  // Ultra-vivid metallic gradient — near-white start, jump to full vivid color, deep shadow at bottom
-  const hexGradient = `linear-gradient(135deg,
-    rgba(255,255,255,0.98) 0%,
-    ${info.bg} 18%,
-    ${info.bg} 42%,
-    ${info.shadow} 72%,
-    rgba(0,0,0,0.85) 100%
+  // Vivid metallic gradient — top-lit, deep bottom shadow
+  const hexGradient = `linear-gradient(to bottom,
+    rgba(255,255,255,0.95) 0%,
+    ${info.highlight} 10%,
+    ${info.bg} 28%,
+    ${info.bg} 60%,
+    ${info.shadow} 82%,
+    rgba(0,0,0,0.80) 100%
   )`;
 
   const glowColor = info.bg;
@@ -61,8 +75,8 @@ const NutPiece: React.FC<NutPieceProps> = ({
     <div
       className="nut-piece"
       style={{
-        width: size,
-        height: size,
+        width: nutW,
+        height: nutH,
         flexShrink: 0,
         position: "relative",
         cursor: "pointer",
@@ -70,13 +84,13 @@ const NutPiece: React.FC<NutPieceProps> = ({
         transition,
         animation,
         filter:
-          isSelected || isFloating || isUnscrewing
-            ? `drop-shadow(0 10px 20px ${info.bg}ee) drop-shadow(0 0 14px ${info.bg}bb)`
-            : `drop-shadow(0 8px 14px ${info.shadow}cc) drop-shadow(0 3px 6px rgba(0,0,0,0.75))`,
+          isSelected || isFloating || isUnscrewing || isComplete
+            ? `drop-shadow(0 6px 14px ${info.bg}ee) drop-shadow(0 0 10px ${info.bg}bb)`
+            : `drop-shadow(0 4px 8px ${info.shadow}cc) drop-shadow(0 2px 4px rgba(0,0,0,0.75))`,
         ...style,
       }}
     >
-      {/* Layer 1: Outer hex body — vivid base gradient */}
+      {/* Layer 1: Outer hex body — full-width flat hex */}
       <div
         style={{
           position: "absolute",
@@ -87,125 +101,104 @@ const NutPiece: React.FC<NutPieceProps> = ({
         }}
       />
 
-      {/* Layer 2: Metallic face sheen — strong upper-left lighting */}
+      {/* Layer 2: Metallic face sheen — top-lit lighting */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           clipPath: hexClip,
           background:
-            "linear-gradient(148deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.22) 22%, transparent 48%, rgba(0,0,0,0.28) 80%, rgba(0,0,0,0.52) 100%)",
+            "linear-gradient(to bottom, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.18) 35%, transparent 55%, rgba(0,0,0,0.30) 80%, rgba(0,0,0,0.55) 100%)",
           pointerEvents: "none",
         }}
       />
 
-      {/* Layer 3: Right-edge rim light — thin metallic highlight on right */}
+      {/* Layer 3: Left chamfer highlight */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           clipPath: hexClip,
           background:
-            "linear-gradient(270deg, rgba(255,255,255,0.20) 0%, transparent 30%)",
+            "linear-gradient(to right, rgba(255,255,255,0.22) 0%, transparent 25%)",
           pointerEvents: "none",
         }}
       />
 
-      {/* Layer 4: Bottom edge shadow strip — adds thickness/3D depth */}
+      {/* Layer 4: Right chamfer shadow */}
       <div
         style={{
           position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: "25%",
+          inset: 0,
           clipPath: hexClip,
           background:
-            "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)",
+            "linear-gradient(to left, rgba(0,0,0,0.30) 0%, transparent 25%)",
           pointerEvents: "none",
-          zIndex: 1,
         }}
       />
 
-      {/* Layer 5: Inner raised ring — machined metallic surface */}
+      {/* Layer 5: Center rod hole — oval dark tunnel where rod passes through */}
       <div
         style={{
           position: "absolute",
           top: "50%",
           left: "50%",
-          width: innerRingSize,
-          height: innerRingSize,
-          transform: "translate(-50%, -50%)",
-          borderRadius: "50%",
-          background: `radial-gradient(circle at 32% 28%, ${info.highlight}, ${info.bg} 30%, ${info.shadow} 80%, rgba(0,0,0,0.9) 100%)`,
-          boxShadow:
-            "inset 0 4px 8px rgba(255,255,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.6), 0 0 0 2.5px rgba(0,0,0,0.35)",
-          zIndex: 2,
-        }}
-      />
-
-      {/* Layer 6: Center bolt hole — dark deep tunnel */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          width: holeSize,
-          height: holeSize,
+          width: holeW,
+          height: holeH,
           transform: "translate(-50%, -50%)",
           borderRadius: "50%",
           background:
-            "radial-gradient(circle at 33% 28%, #252525, #050505 55%, #000)",
+            "radial-gradient(ellipse at 35% 30%, #282828, #080808 60%, #000)",
           boxShadow:
-            "inset 0 5px 12px rgba(0,0,0,0.99), inset 0 -1px 4px rgba(255,255,255,0.05), 0 0 0 3.5px rgba(0,0,0,0.85)",
+            "inset 0 3px 8px rgba(0,0,0,0.99), inset 0 -1px 3px rgba(255,255,255,0.04), 0 0 0 2.5px rgba(0,0,0,0.80)",
           zIndex: 3,
         }}
       />
 
-      {/* Layer 7: Primary gloss highlight — large bright oval top-left */}
+      {/* Layer 6: Top gloss highlight — bright oval catching the light */}
       <div
         style={{
           position: "absolute",
-          top: "8%",
-          left: "14%",
-          width: "35%",
-          height: "28%",
+          top: "5%",
+          left: "20%",
+          width: "42%",
+          height: "36%",
           borderRadius: "50%",
-          background: "rgba(255,255,255,0.92)",
-          transform: "rotate(-24deg)",
+          background: "rgba(255,255,255,0.90)",
+          transform: "rotate(-5deg)",
           pointerEvents: "none",
           filter: "blur(1px)",
           zIndex: 4,
         }}
       />
 
-      {/* Layer 8: Secondary gloss spot — smaller lower-right glint */}
+      {/* Layer 7: Bottom secondary glint */}
       <div
         style={{
           position: "absolute",
-          bottom: "14%",
-          right: "14%",
-          width: "16%",
-          height: "11%",
+          bottom: "8%",
+          right: "22%",
+          width: "18%",
+          height: "25%",
           borderRadius: "50%",
-          background: "rgba(220,240,255,0.40)",
-          transform: "rotate(-15deg)",
+          background: "rgba(200,230,255,0.35)",
+          transform: "rotate(-10deg)",
           pointerEvents: "none",
           filter: "blur(1.5px)",
           zIndex: 4,
         }}
       />
 
-      {/* Layer 9: Selection / float glow ring */}
+      {/* Layer 8: Selection/float glow ring */}
       {(isSelected || isFloating) && (
         <div
           style={{
             position: "absolute",
-            inset: -5,
+            inset: -4,
             clipPath: hexClip,
             border: `3px solid ${glowColor}`,
-            borderRadius: 4,
-            boxShadow: `0 0 0 3px ${glowColor}77, 0 0 20px ${glowColor}99, 0 0 36px ${glowColor}55`,
+            borderRadius: 3,
+            boxShadow: `0 0 0 3px ${glowColor}77, 0 0 16px ${glowColor}99, 0 0 28px ${glowColor}55`,
             pointerEvents: "none",
             zIndex: 5,
           }}

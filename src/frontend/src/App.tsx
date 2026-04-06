@@ -17,9 +17,13 @@ import HomeScreen from "./screens/HomeScreen";
 import LevelCompleteScreen from "./screens/LevelCompleteScreen";
 import LevelFailedScreen from "./screens/LevelFailedScreen";
 import LevelSelectScreen from "./screens/LevelSelectScreen";
+import LoadingScreen from "./screens/LoadingScreen";
+import WelcomeScreen from "./screens/WelcomeScreen";
 
 type Screen =
+  | { type: "welcome" }
   | { type: "home" }
+  | { type: "loading"; nextLevel: number }
   | { type: "levelSelect" }
   | {
       type: "game";
@@ -38,7 +42,8 @@ type Screen =
 
 const App: React.FC = () => {
   const [save, setSave] = useState<SaveData>(() => loadSave());
-  const [screen, setScreen] = useState<Screen>({ type: "home" });
+  // Always start with welcome screen
+  const [screen, setScreen] = useState<Screen>({ type: "welcome" });
   const [soundEnabled, setSoundEnabled] = useState(
     () => loadSave().soundEnabled,
   );
@@ -64,9 +69,9 @@ const App: React.FC = () => {
   }, []);
 
   const handlePlay = useCallback(() => {
-    // Continue from max unlocked level
+    // Show loading screen before entering game
     const levelNum = Math.max(1, save.maxUnlockedLevel);
-    setScreen({ type: "game", levelNum });
+    setScreen({ type: "loading", nextLevel: levelNum });
   }, [save.maxUnlockedLevel]);
 
   const handleLevelSelect = useCallback(() => {
@@ -121,12 +126,20 @@ const App: React.FC = () => {
     [],
   );
 
+  const handleLevelFailed = useCallback(
+    (levelNum: number, hintsLeft: number) => {
+      setScreen({ type: "levelFailed", levelNum, hintsLeft });
+    },
+    [],
+  );
+
   const handleNextLevel = useCallback((currentLevel: number) => {
     const next = currentLevel + 1;
     if (next > 5000) {
       setScreen({ type: "home" });
       return;
     }
+    // Go to next level directly (no loading screen to avoid double-trigger issues)
     setScreen({ type: "game", levelNum: next });
   }, []);
 
@@ -155,6 +168,9 @@ const App: React.FC = () => {
   // Render current screen
   const renderScreen = () => {
     switch (screen.type) {
+      case "welcome":
+        return <WelcomeScreen onDone={() => setScreen({ type: "home" })} />;
+
       case "home":
         return (
           <HomeScreen
@@ -162,6 +178,15 @@ const App: React.FC = () => {
             onPlay={handlePlay}
             onLevelSelect={handleLevelSelect}
             onDailyChallenge={handleDailyChallenge}
+          />
+        );
+
+      case "loading":
+        return (
+          <LoadingScreen
+            onComplete={() =>
+              setScreen({ type: "game", levelNum: screen.nextLevel })
+            }
           />
         );
 
@@ -178,6 +203,7 @@ const App: React.FC = () => {
         return (
           <div style={{ position: "relative" }}>
             <GameScreen
+              key={`game-${screen.levelNum}-${screen.isDaily ? "daily" : "normal"}`}
               levelNum={screen.levelNum}
               isDaily={screen.isDaily}
               dailyTubes={screen.dailyTubes}
@@ -185,6 +211,7 @@ const App: React.FC = () => {
               onLevelComplete={(lvl, stars, moves) =>
                 handleLevelComplete(lvl, stars, moves, screen.isDaily)
               }
+              onLevelFailed={handleLevelFailed}
               onQuitToMap={handleQuitToMap}
               onQuitToHome={handleQuitToHome}
               soundEnabled={soundEnabled}
@@ -197,37 +224,23 @@ const App: React.FC = () => {
 
       case "levelComplete":
         return (
-          <div style={{ position: "relative" }}>
-            {/* Game screen in background */}
-            <GameScreen
-              levelNum={screen.levelNum}
-              isDaily={screen.isDaily}
-              save={save}
-              onLevelComplete={() => {}}
-              onQuitToMap={handleQuitToMap}
-              onQuitToHome={handleQuitToHome}
-              soundEnabled={soundEnabled}
-              musicEnabled={musicEnabled}
-              onToggleSound={handleToggleSound}
-              onToggleMusic={handleToggleMusic}
-            />
-            <LevelCompleteScreen
-              levelNum={screen.levelNum}
-              stars={screen.stars}
-              moves={screen.moves}
-              totalPoints={save.totalPoints}
-              isDaily={screen.isDaily}
-              onNextLevel={() => handleNextLevel(screen.levelNum)}
-              onReplay={() => handleReplay(screen.levelNum, screen.isDaily)}
-              onQuitToMap={handleQuitToMap}
-            />
-          </div>
+          <LevelCompleteScreen
+            levelNum={screen.levelNum}
+            stars={screen.stars}
+            moves={screen.moves}
+            totalPoints={save.totalPoints}
+            isDaily={screen.isDaily}
+            onNextLevel={() => handleNextLevel(screen.levelNum)}
+            onReplay={() => handleReplay(screen.levelNum, screen.isDaily)}
+            onQuitToMap={handleQuitToMap}
+          />
         );
 
       case "levelFailed":
         return (
           <div style={{ position: "relative" }}>
             <GameScreen
+              key={`failed-${screen.levelNum}`}
               levelNum={screen.levelNum}
               save={save}
               onLevelComplete={() => {}}

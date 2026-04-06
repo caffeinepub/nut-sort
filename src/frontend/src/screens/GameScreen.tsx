@@ -52,6 +52,7 @@ interface GameScreenProps {
   onLevelComplete: (levelNum: number, stars: number, moves: number) => void;
   onQuitToMap: () => void;
   onQuitToHome: () => void;
+  onLevelFailed?: (levelNum: number, hintsLeft: number) => void;
   soundEnabled: boolean;
   musicEnabled: boolean;
   onToggleSound: () => void;
@@ -66,6 +67,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
   onLevelComplete,
   onQuitToMap,
   onQuitToHome: _onQuitToHome,
+  onLevelFailed,
   soundEnabled,
   musicEnabled,
   onToggleSound,
@@ -118,6 +120,13 @@ const GameScreen: React.FC<GameScreenProps> = ({
     levelNum,
     onLevelComplete,
   ]);
+
+  // Trigger failed callback
+  useEffect(() => {
+    if (gameState.isFailed && onLevelFailed) {
+      onLevelFailed(levelNum, gameState.hintsLeft);
+    }
+  }, [gameState.isFailed, gameState.hintsLeft, levelNum, onLevelFailed]);
 
   const handleTubeClick = useCallback(
     (tubeIdx: number) => {
@@ -281,7 +290,10 @@ const GameScreen: React.FC<GameScreenProps> = ({
           <button
             type="button"
             className="icon-btn"
-            onClick={() => soundSystem.playClick()}
+            onClick={() => {
+              soundSystem.playClick();
+              setIsPaused(true);
+            }}
             data-ocid="game.shop_button"
             title="Shop"
             style={{
@@ -442,6 +454,11 @@ const GameScreen: React.FC<GameScreenProps> = ({
               isInvalid={invalidTube === i}
               isUnscrewing={unscrewingTube === i}
               isScrewingIn={screwingInTube === i}
+              isComplete={
+                tube.length === nutsPerTube &&
+                tube.length > 0 &&
+                tube.every((n) => n === tube[0])
+              }
               innerColor={ROD_INNER_COLORS[i % ROD_INNER_COLORS.length]}
               onClick={() => handleTubeClick(i)}
               nutSize={nutSize}

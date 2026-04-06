@@ -43,7 +43,7 @@ const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(50,20,80,0.75)",
+        background: "rgba(20,10,50,0.75)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -61,8 +61,8 @@ const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
             "linear-gradient(135deg, #FFF9E6 0%, #FFF0A0 50%, #FFE066 100%)",
           border: "4px solid rgba(0,0,0,0.2)",
           borderRadius: 28,
-          padding: "36px 28px 28px",
-          width: "min(360px, 92vw)",
+          padding: "28px 24px 24px",
+          width: "min(320px, 82vw)",
           textAlign: "center",
           boxShadow:
             "0 8px 0 rgba(0,0,0,0.2), 0 16px 40px rgba(0,0,0,0.4), 0 0 60px rgba(255,200,0,0.3)",
@@ -74,38 +74,32 @@ const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
           zIndex: 2,
         }}
       >
-        {/* Trophy */}
+        {/* Amazing! headline */}
         <div
           style={{
-            fontSize: 72,
-            marginBottom: 8,
-            animation: "bounce-in 0.5s ease 0.2s both",
-            filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))",
-          }}
-        >
-          🏆
-        </div>
-
-        <h2
-          style={{
-            color: "#7a3800",
-            fontSize: 32,
+            fontSize: "clamp(2.8rem, 12vw, 4.2rem)",
             fontWeight: 900,
-            margin: "0 0 4px",
             fontFamily: "Fredoka One, Nunito, sans-serif",
-            textShadow:
-              "-2px -2px 0 rgba(255,180,0,0.5), 2px -2px 0 rgba(255,180,0,0.5), -2px 2px 0 rgba(255,180,0,0.5), 2px 2px 0 rgba(255,180,0,0.5)",
-            letterSpacing: "1px",
+            lineHeight: 1,
+            marginBottom: 8,
+            background:
+              "linear-gradient(135deg, #FF4FD8 0%, #FF8C00 50%, #FFD700 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            filter:
+              "drop-shadow(-2px -2px 0 rgba(0,0,0,0.35)) drop-shadow(2px -2px 0 rgba(0,0,0,0.35)) drop-shadow(-2px 2px 0 rgba(0,0,0,0.35)) drop-shadow(2px 2px 0 rgba(0,0,0,0.35)) drop-shadow(0 5px 0 rgba(0,0,0,0.2))",
+            animation: visible ? "bounce-in 0.5s ease 0.15s both" : "none",
           }}
         >
-          Level Complete!
-        </h2>
+          Amazing! 🎉
+        </div>
 
         <p
           style={{
             color: "#9a5a00",
-            fontSize: 15,
-            margin: "0 0 16px",
+            fontSize: 14,
+            margin: "0 0 12px",
             fontWeight: 700,
           }}
         >
@@ -113,7 +107,7 @@ const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
         </p>
 
         {/* Stars */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 12 }}>
           <StarRating stars={stars} size="lg" animate />
         </div>
 
@@ -124,8 +118,8 @@ const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
               background: "linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%)",
               border: "3px solid rgba(0,0,0,0.2)",
               borderRadius: 18,
-              padding: "12px 20px",
-              marginBottom: 20,
+              padding: "10px 18px",
+              marginBottom: 16,
               animation: "pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1)",
               boxShadow:
                 "0 5px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(255,100,120,0.35)",
@@ -133,7 +127,7 @@ const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
           >
             <div
               style={{
-                fontSize: 28,
+                fontSize: 26,
                 fontWeight: 900,
                 color: "#fff",
                 fontFamily: "Fredoka One, Nunito, sans-serif",

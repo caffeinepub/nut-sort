@@ -109,39 +109,34 @@ export interface LevelConfig {
 }
 
 export function getLevelConfig(levelNum: number): LevelConfig {
-  // Always 2 empty tubes so players have room to sort
-  if (levelNum <= 5)
-    return { tubes: 7, colors: 5, nutsPerTube: 5, emptyTubes: 2 };
+  // Always 2 empty tubes so players have room to sort.
+  // nutsPerTube is always 5 — exactly 5 nuts per color, per rod.
+  if (levelNum <= 3)
+    return { tubes: 5, colors: 3, nutsPerTube: 5, emptyTubes: 2 };
+  if (levelNum <= 8)
+    return { tubes: 6, colors: 4, nutsPerTube: 5, emptyTubes: 2 };
   if (levelNum <= 15)
+    return { tubes: 7, colors: 5, nutsPerTube: 5, emptyTubes: 2 };
+  if (levelNum <= 30)
     return { tubes: 8, colors: 6, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 40)
-    return { tubes: 8, colors: 6, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 100)
+  if (levelNum <= 60)
     return { tubes: 9, colors: 7, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 200)
-    return { tubes: 9, colors: 7, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 400)
+  if (levelNum <= 120)
     return { tubes: 10, colors: 8, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 700)
+  if (levelNum <= 300)
     return { tubes: 11, colors: 9, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 1200)
+  if (levelNum <= 700)
     return { tubes: 12, colors: 10, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 2000)
-    return { tubes: 13, colors: 11, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 3000)
-    return { tubes: 13, colors: 11, nutsPerTube: 5, emptyTubes: 2 };
-  if (levelNum <= 4000)
-    return { tubes: 13, colors: 11, nutsPerTube: 5, emptyTubes: 2 };
   return { tubes: 13, colors: 11, nutsPerTube: 5, emptyTubes: 2 };
 }
 
 export function getMinMoves(levelNum: number): number {
-  if (levelNum <= 5) return 12;
-  if (levelNum <= 15) return 16;
-  if (levelNum <= 50) return 20;
-  if (levelNum <= 200) return 25;
-  if (levelNum <= 1000) return 30;
-  return 40;
+  if (levelNum <= 5) return 8;
+  if (levelNum <= 15) return 12;
+  if (levelNum <= 50) return 16;
+  if (levelNum <= 200) return 20;
+  if (levelNum <= 1000) return 25;
+  return 35;
 }
 
 function mulberry32(seed: number): () => number {
@@ -156,75 +151,58 @@ function mulberry32(seed: number): () => number {
 }
 
 /**
- * Grouped mix: each rod gets mostly one colour as its "primary",
- * but a few nuts from other colours are scattered in.
- * This makes the puzzle clear (you can see what goes where)
- * while still requiring moves to solve.
+ * groupedMixNuts — STRICT version.
+ * Guarantees EXACTLY nutsPerTube nuts of each color across ALL tubes combined.
+ * Each rod starts with a primary color, then random swaps between rods
+ * mix things up without ever changing the total count per color.
  */
 function groupedMixNuts(
   colors: NutColor[],
   nutsPerTube: number,
   emptyTubes: number,
   rand: () => number,
-  mixFraction = 0.35, // fraction of "foreign" nuts per rod
+  mixFraction = 0.3,
 ): NutColor[][] {
   const numColors = colors.length;
 
-  // Build a pool for each color — each appears exactly nutsPerTube times
-  const pools: NutColor[][] = colors.map((c) => Array(nutsPerTube).fill(c));
+  // Step 1: Each rod starts fully filled with its primary color
+  const tubes: NutColor[][] = Array.from({ length: numColors }, (_, t) =>
+    Array(nutsPerTube).fill(colors[t]),
+  );
 
-  // For each rod, assign a primary color and fill mostly with it,
-  // then swap some with random foreign nuts
-  const tubes: NutColor[][] = [];
+  // Step 2: Perform random pairwise swaps between rods.
+  const swapsPerTube = Math.max(2, Math.round(nutsPerTube * mixFraction));
+  const totalSwaps = numColors * swapsPerTube;
 
-  for (let t = 0; t < numColors; t++) {
-    const primaryColor = colors[t];
-    // Start with all primary
-    const tube: NutColor[] = Array(nutsPerTube).fill(primaryColor);
-
-    // Decide how many foreign nuts to insert
-    const foreignCount = Math.max(1, Math.round(nutsPerTube * mixFraction));
-
-    // Pick random slots to replace with foreign colors
-    const slotsToReplace: number[] = [];
-    const allSlots = Array.from({ length: nutsPerTube }, (_, i) => i);
-    // Shuffle slots
-    for (let i = allSlots.length - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1));
-      [allSlots[i], allSlots[j]] = [allSlots[j], allSlots[i]];
+  for (let s = 0; s < totalSwaps; s++) {
+    const tA = Math.floor(rand() * numColors);
+    let tB = Math.floor(rand() * numColors);
+    let att = 0;
+    while (tB === tA && att < 8) {
+      tB = Math.floor(rand() * numColors);
+      att++;
     }
-    for (let i = 0; i < foreignCount; i++) slotsToReplace.push(allSlots[i]);
+    if (tA === tB) continue;
 
-    // Replace selected slots with foreign colors
-    for (const slot of slotsToReplace) {
-      // Pick a random foreign color (not the primary)
-      let foreignColor: NutColor;
-      let attempts = 0;
-      do {
-        foreignColor = colors[Math.floor(rand() * numColors)];
-        attempts++;
-      } while (foreignColor === primaryColor && attempts < 10);
+    const sA = Math.floor(rand() * nutsPerTube);
+    const sB = Math.floor(rand() * nutsPerTube);
 
-      tube[slot] = foreignColor;
-      // Remove one of that foreign color from its pool (to keep total counts balanced)
-      const poolIdx = pools[colors.indexOf(foreignColor)];
-      const removeIdx = poolIdx.indexOf(foreignColor);
-      if (removeIdx !== -1) poolIdx.splice(removeIdx, 1);
-
-      // Add back the displaced primary to its pool
-      pools[colors.indexOf(primaryColor)].push(primaryColor);
+    if (tubes[tA][sA] !== tubes[tB][sB]) {
+      const tmp = tubes[tA][sA];
+      tubes[tA][sA] = tubes[tB][sB];
+      tubes[tB][sB] = tmp;
     }
+  }
 
-    // Shuffle the tube contents so top nut is unpredictable
+  // Step 3: Shuffle each tube's internal order
+  for (const tube of tubes) {
     for (let i = tube.length - 1; i > 0; i--) {
       const j = Math.floor(rand() * (i + 1));
       [tube[i], tube[j]] = [tube[j], tube[i]];
     }
-
-    tubes.push(tube);
   }
 
-  // Add empty tubes
+  // Step 4: Add empty tubes
   for (let i = 0; i < emptyTubes; i++) {
     tubes.push([]);
   }
@@ -282,49 +260,50 @@ export function generateLevel(levelNum: number): NutColor[][] {
   const selectedColors = NUT_COLORS.slice(0, colors) as NutColor[];
 
   // Mix fraction increases slightly with level for more challenge
-  const mixFraction = Math.min(0.5, 0.25 + levelNum * 0.001);
+  const mixFraction = Math.min(0.5, 0.3 + levelNum * 0.001);
 
-  // Try multiple seeds for early levels to ensure solvability
-  if (levelNum <= 400) {
-    const minRequired = getMinMoves(levelNum);
-    const maxAttempts = 10;
+  const minRequired = Math.max(5, getMinMoves(levelNum));
+  const maxAttempts = 20;
 
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const seed = baseSeed + attempt * 1234567;
-      const rand = mulberry32(seed);
-      const mixed = groupedMixNuts(
-        selectedColors,
-        nutsPerTube,
-        emptyTubes,
-        rand,
-        mixFraction,
-      );
-
-      const depth = countMinMoves(mixed, nutsPerTube);
-      if (depth >= minRequired) {
-        return mixed;
-      }
-    }
-
-    // Fallback
-    const rand = mulberry32(baseSeed + 9 * 1234567);
-    return groupedMixNuts(
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const seed = baseSeed + attempt * 1234567;
+    const rand = mulberry32(seed);
+    const mixed = groupedMixNuts(
       selectedColors,
       nutsPerTube,
       emptyTubes,
       rand,
       mixFraction,
     );
+
+    // CRITICAL: Never return a pre-solved level (isComplete = true means 0 moves needed)
+    // Also ensure minimum moves requirement is met
+    const depth = countMinMoves(mixed, nutsPerTube);
+    if (depth >= minRequired) {
+      return mixed;
+    }
   }
 
-  const rand = mulberry32(baseSeed);
-  return groupedMixNuts(
-    selectedColors,
-    nutsPerTube,
-    emptyTubes,
-    rand,
-    mixFraction,
-  );
+  // Fallback: force a non-trivial mix with higher fraction
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const seed = baseSeed + 99999 + attempt * 7654321;
+    const rand = mulberry32(seed);
+    const mixed = groupedMixNuts(
+      selectedColors,
+      nutsPerTube,
+      emptyTubes,
+      rand,
+      0.5,
+    );
+    // Accept anything that is NOT already complete (at least 1 move required)
+    if (!isLevelComplete(mixed, nutsPerTube)) {
+      return mixed;
+    }
+  }
+
+  // Last resort: manually scramble
+  const rand = mulberry32(baseSeed + 777777);
+  return groupedMixNuts(selectedColors, nutsPerTube, emptyTubes, rand, 0.5);
 }
 
 export function dateToSeed(date: Date): number {

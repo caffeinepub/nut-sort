@@ -229,7 +229,6 @@ const LOGO_DOTS = [
   { id: "ld-5", color: "#9B59B6", dur: 0.8 },
 ];
 
-// Cartoon clouds config
 const CLOUDS = [
   { id: "c1", left: 3, top: 8, width: 90, opacity: 0.85, dur: 6 },
   { id: "c2", left: 55, top: 14, width: 70, opacity: 0.75, dur: 8 },
@@ -376,16 +375,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
           ))}
         </div>
 
-        {/* NUT SORT title — Fredoka One, cartoon text stroke */}
+        {/* SortCraft Puzzle title — Fredoka One, cartoon text stroke */}
         <h1
           className="game-logo"
           style={{
-            fontSize: "clamp(3.2rem, 15vw, 5.5rem)",
+            fontSize: "clamp(2.2rem, 10vw, 3.8rem)",
             fontWeight: 900,
             lineHeight: 1,
             fontFamily: "Fredoka One, Nunito, sans-serif",
             margin: 0,
-            letterSpacing: "4px",
+            letterSpacing: "3px",
             textTransform: "uppercase",
           }}
         >
@@ -401,46 +400,53 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
                 "drop-shadow(-3px -3px 0 rgba(0,0,0,0.55)) drop-shadow(3px -3px 0 rgba(0,0,0,0.55)) drop-shadow(-3px 3px 0 rgba(0,0,0,0.55)) drop-shadow(3px 3px 0 rgba(0,0,0,0.55)) drop-shadow(0 6px 0 rgba(0,0,0,0.25))",
             }}
           >
-            NUT
-          </span>
-          <span
-            style={{
-              color: "rgba(0,0,0,0.15)",
-              display: "inline",
-              fontFamily: "Fredoka One, sans-serif",
-            }}
-          >
-            {" "}
-          </span>
-          <span
-            style={{
-              background: "linear-gradient(135deg, #FF60C0 0%, #9B40F8 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              display: "inline",
-              textShadow: "none",
-              filter:
-                "drop-shadow(-3px -3px 0 rgba(0,0,0,0.55)) drop-shadow(3px -3px 0 rgba(0,0,0,0.55)) drop-shadow(-3px 3px 0 rgba(0,0,0,0.55)) drop-shadow(3px 3px 0 rgba(0,0,0,0.55)) drop-shadow(0 6px 0 rgba(0,0,0,0.25))",
-            }}
-          >
-            SORT
+            SortCraft
           </span>
         </h1>
-
-        <p
+        <h2
           style={{
-            color: "#6b3d6e",
-            fontSize: 15,
-            marginTop: 10,
-            fontFamily: "Nunito, sans-serif",
-            fontWeight: 700,
-            letterSpacing: "0.5px",
-            textShadow: "0 1px 0 rgba(255,255,255,0.5)",
+            fontSize: "clamp(1.6rem, 7vw, 2.8rem)",
+            fontWeight: 900,
+            lineHeight: 1.1,
+            fontFamily: "Fredoka One, Nunito, sans-serif",
+            margin: "4px 0 0",
+            letterSpacing: "2px",
+            textTransform: "uppercase",
+            background: "linear-gradient(135deg, #FF60C0 0%, #9B40F8 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            filter:
+              "drop-shadow(-2px -2px 0 rgba(0,0,0,0.5)) drop-shadow(2px -2px 0 rgba(0,0,0,0.5)) drop-shadow(-2px 2px 0 rgba(0,0,0,0.5)) drop-shadow(2px 2px 0 rgba(0,0,0,0.5))",
           }}
         >
-          Sort the nuts. Master the puzzle.
-        </p>
+          Puzzle
+        </h2>
+
+        {/* Developed by Adarsh Chaudhary */}
+        <div
+          style={{
+            marginTop: 8,
+            background: "rgba(255,255,255,0.75)",
+            border: "2px solid rgba(100,50,200,0.25)",
+            borderRadius: 999,
+            padding: "4px 16px",
+            display: "inline-block",
+            boxShadow: "0 2px 8px rgba(100,50,200,0.15)",
+          }}
+        >
+          <span
+            style={{
+              fontSize: 12,
+              color: "#7a3ab0",
+              fontWeight: 800,
+              fontFamily: "Nunito, sans-serif",
+              letterSpacing: "0.5px",
+            }}
+          >
+            🎮 Developed by Adarsh Chaudhary
+          </span>
+        </div>
       </div>
 
       {/* Fox mascot */}
@@ -456,7 +462,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
       >
         <img
           src="/assets/generated/fox-mascot-transparent.dim_400x500.png"
-          alt="NUT SORT mascot"
+          alt="SortCraft Puzzle mascot"
           style={{
             width: 200,
             maxWidth: "52vw",
