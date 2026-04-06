@@ -20,8 +20,6 @@ import type { NutColor } from "../game/levelGenerator";
 import { soundSystem } from "../game/soundSystem";
 import type { SaveData } from "../game/storage";
 
-const SKIP_COST = 200;
-
 // Inner rod colours — one per stand, cycling through 11 colours
 const ROD_INNER_COLORS = [
   "#FF4757", // red
@@ -188,12 +186,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
     setScrewingInTube(null);
     soundSystem.playClick();
   }, [levelNum, isDaily, dailyTubes]);
-
-  const handleSkip = useCallback(() => {
-    if (save.totalPoints < SKIP_COST) return;
-    soundSystem.playClick();
-    onLevelComplete(levelNum, 1, 999);
-  }, [save.totalPoints, levelNum, onLevelComplete]);
 
   const handleAddStand = useCallback(() => {
     if (extraStandUsed) return;
@@ -528,21 +520,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
             <span style={{ marginLeft: 4, fontSize: 13 }}>
               {extraStandUsed ? "Stand" : "Stand (free)"}
             </span>
-          </button>
-        )}
-
-        {/* Skip button */}
-        {!isDaily && (
-          <button
-            type="button"
-            className="hud-btn hud-btn-skip"
-            onClick={handleSkip}
-            disabled={save.totalPoints < SKIP_COST}
-            data-ocid="game.skip_button"
-            title={`Skip level (costs ${SKIP_COST} pts)`}
-            style={{ color: "#556", border: "2px solid rgba(0,0,0,0.15)" }}
-          >
-            ⏭ <span style={{ fontSize: 12 }}>Skip</span>
           </button>
         )}
       </div>
