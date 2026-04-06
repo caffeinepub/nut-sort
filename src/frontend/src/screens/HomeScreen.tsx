@@ -8,6 +8,7 @@ interface HomeScreenProps {
   onPlay: () => void;
   onLevelSelect: () => void;
   onDailyChallenge: () => void;
+  onOpenShop: () => void;
 }
 
 const STAR_PARTICLES = [
@@ -241,6 +242,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
   onPlay,
   onLevelSelect,
   onDailyChallenge,
+  onOpenShop,
 }) => {
   const handlePlay = useCallback(() => {
     soundSystem.init();
@@ -375,7 +377,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
           ))}
         </div>
 
-        {/* SortCraft Puzzle title — Fredoka One, cartoon text stroke */}
+        {/* SortCraft Puzzle title */}
         <h1
           className="game-logo"
           style={{
@@ -503,6 +505,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
           data-ocid="home.levels_button"
         >
           🗺 LEVELS
+        </button>
+
+        <button
+          type="button"
+          className="game-btn btn-secondary btn-lg"
+          onClick={() => {
+            soundSystem.playClick();
+            onOpenShop();
+          }}
+          data-ocid="home.shop_button"
+        >
+          🛒 Shop
         </button>
 
         <button

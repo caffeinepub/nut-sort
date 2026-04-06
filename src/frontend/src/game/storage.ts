@@ -11,6 +11,9 @@ export interface SaveData {
   musicEnabled: boolean;
   lastDailyChallenge: string;
   dailyChallengeStreak: number;
+  unlockedBackgrounds: string[];
+  activeBackground: string;
+  premiumUntil: number | null;
 }
 
 const STORAGE_KEY = "sortcraft_nuts_save";
@@ -24,6 +27,10 @@ export function getDefaultSave(): SaveData {
     musicEnabled: true,
     lastDailyChallenge: "",
     dailyChallengeStreak: 0,
+    unlockedBackgrounds: ["sky_blue"],
+    activeBackground:
+      "linear-gradient(180deg, #87CEEB 0%, #B0E0FF 40%, #E8F4FF 100%)",
+    premiumUntil: null,
   };
 }
 
@@ -90,6 +97,6 @@ export function claimDailyChallenge(save: SaveData): SaveData {
     ...save,
     lastDailyChallenge: today,
     dailyChallengeStreak: streak,
-    totalPoints: save.totalPoints + 100, // bonus for daily
+    totalPoints: save.totalPoints + 100,
   };
 }

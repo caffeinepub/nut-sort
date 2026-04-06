@@ -20,22 +20,20 @@ import type { NutColor } from "../game/levelGenerator";
 import { soundSystem } from "../game/soundSystem";
 import type { SaveData } from "../game/storage";
 
-// Inner rod colours — one per stand, cycling through 11 colours
 const ROD_INNER_COLORS = [
-  "#FF4757", // red
-  "#2F86FF", // blue
-  "#FFD700", // yellow
-  "#2ED573", // green
-  "#FF6B35", // orange
-  "#9B59B6", // purple
-  "#FF6BC1", // pink
-  "#2a2a2a", // black
-  "#e8e8e8", // white
-  "#8B4513", // brown
-  "#7f7f7f", // grey
+  "#FF4757",
+  "#2F86FF",
+  "#FFD700",
+  "#2ED573",
+  "#FF6B35",
+  "#9B59B6",
+  "#FF6BC1",
+  "#2a2a2a",
+  "#e8e8e8",
+  "#8B4513",
+  "#7f7f7f",
 ];
 
-// Cartoon cloud decorations for game background
 const GAME_CLOUDS = [
   { id: "gc1", left: 2, top: 12, width: 70, opacity: 0.6, dur: 7 },
   { id: "gc2", left: 60, top: 8, width: 55, opacity: 0.5, dur: 9 },
@@ -55,6 +53,8 @@ interface GameScreenProps {
   musicEnabled: boolean;
   onToggleSound: () => void;
   onToggleMusic: () => void;
+  onOpenShop: () => void;
+  activeBackground: string;
 }
 
 const GameScreen: React.FC<GameScreenProps> = ({
@@ -70,6 +70,8 @@ const GameScreen: React.FC<GameScreenProps> = ({
   musicEnabled,
   onToggleSound,
   onToggleMusic,
+  onOpenShop,
+  activeBackground,
 }) => {
   const initTubes = useMemo(() => {
     if (isDaily && dailyTubes) return dailyTubes;
@@ -89,7 +91,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
   const nutsPerTube = isDaily ? 4 : config.nutsPerTube;
   const chapter = getChapterForLevel(levelNum);
 
-  // Reset game when level changes
   useEffect(() => {
     const tubes = isDaily && dailyTubes ? dailyTubes : generateLevel(levelNum);
     setGameState(createGameState(levelNum, tubes, isDaily));
@@ -100,7 +101,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
     setScrewingInTube(null);
   }, [levelNum, isDaily, dailyTubes]);
 
-  // Trigger complete callbacks
   useEffect(() => {
     if (gameState.isComplete) {
       const stars = calculateStars(
@@ -119,7 +119,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
     onLevelComplete,
   ]);
 
-  // Trigger failed callback
   useEffect(() => {
     if (gameState.isFailed && onLevelFailed) {
       onLevelFailed(levelNum, gameState.hintsLeft);
@@ -216,6 +215,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
       style={{
         minHeight: "100dvh",
         background:
+          activeBackground ||
           "linear-gradient(180deg, #87CEEB 0%, #B0E0FF 40%, #E8F4FF 100%)",
         display: "flex",
         flexDirection: "column",
@@ -284,7 +284,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
             className="icon-btn"
             onClick={() => {
               soundSystem.playClick();
-              setIsPaused(true);
+              onOpenShop();
             }}
             data-ocid="game.shop_button"
             title="Shop"
@@ -379,7 +379,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
         </div>
       </div>
 
-      {/* Moves counter — cartoon pill */}
+      {/* Moves counter */}
       <div
         style={{
           display: "flex",
@@ -475,7 +475,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
           boxShadow: "0 -4px 12px rgba(46,204,113,0.2)",
         }}
       >
-        {/* Undo button */}
         <button
           type="button"
           className="hud-btn hud-btn-action hud-btn-undo"
@@ -490,7 +489,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
           <span className="hud-btn-badge">{gameState.undosLeft}</span>
         </button>
 
-        {/* Hint button */}
         <button
           type="button"
           className="hud-btn hud-btn-action hud-btn-hint"
@@ -503,7 +501,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
           <span className="hud-btn-badge">{gameState.hintsLeft}</span>
         </button>
 
-        {/* Add Stand button */}
         {!isDaily && (
           <button
             type="button"
@@ -512,9 +509,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
             disabled={extraStandUsed}
             data-ocid="game.add_stand_button"
             title="Add an extra empty stand"
-            style={{
-              opacity: extraStandUsed ? 0.45 : 1,
-            }}
+            style={{ opacity: extraStandUsed ? 0.45 : 1 }}
           >
             ➕
             <span style={{ marginLeft: 4, fontSize: 13 }}>

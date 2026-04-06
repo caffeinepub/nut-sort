@@ -18,6 +18,7 @@ import LevelCompleteScreen from "./screens/LevelCompleteScreen";
 import LevelFailedScreen from "./screens/LevelFailedScreen";
 import LevelSelectScreen from "./screens/LevelSelectScreen";
 import LoadingScreen from "./screens/LoadingScreen";
+import ShopScreen from "./screens/ShopScreen";
 import WelcomeScreen from "./screens/WelcomeScreen";
 
 type Screen =
@@ -38,11 +39,11 @@ type Screen =
       moves: number;
       isDaily?: boolean;
     }
-  | { type: "levelFailed"; levelNum: number; hintsLeft: number };
+  | { type: "levelFailed"; levelNum: number; hintsLeft: number }
+  | { type: "shop" };
 
 const App: React.FC = () => {
   const [save, setSave] = useState<SaveData>(() => loadSave());
-  // Always start with welcome screen
   const [screen, setScreen] = useState<Screen>({ type: "welcome" });
   const [soundEnabled, setSoundEnabled] = useState(
     () => loadSave().soundEnabled,
@@ -51,7 +52,6 @@ const App: React.FC = () => {
     () => loadSave().musicEnabled,
   );
 
-  // Persist save to localStorage whenever it changes
   useEffect(() => {
     saveSave(save);
   }, [save]);
@@ -69,7 +69,6 @@ const App: React.FC = () => {
   }, []);
 
   const handlePlay = useCallback(() => {
-    // Show loading screen before entering game
     const levelNum = Math.max(1, save.maxUnlockedLevel);
     setScreen({ type: "loading", nextLevel: levelNum });
   }, [save.maxUnlockedLevel]);
@@ -87,10 +86,13 @@ const App: React.FC = () => {
     setScreen({ type: "game", levelNum });
   }, []);
 
+  const handleOpenShop = useCallback(() => {
+    setScreen({ type: "shop" });
+  }, []);
+
   const handleLevelComplete = useCallback(
     (levelNum: number, stars: number, moves: number, isDaily = false) => {
       if (isDaily) {
-        // Daily challenge completed
         setSave((prev) => {
           const updated = claimDailyChallenge(prev);
           saveSave(updated);
@@ -106,7 +108,6 @@ const App: React.FC = () => {
         return;
       }
 
-      // Normal level complete
       const config = getLevelConfig(levelNum);
       const computedStars = calculateStars(
         moves,
@@ -139,7 +140,6 @@ const App: React.FC = () => {
       setScreen({ type: "home" });
       return;
     }
-    // Go to next level directly (no loading screen to avoid double-trigger issues)
     setScreen({ type: "game", levelNum: next });
   }, []);
 
@@ -165,7 +165,6 @@ const App: React.FC = () => {
     setScreen({ type: "home" });
   }, []);
 
-  // Render current screen
   const renderScreen = () => {
     switch (screen.type) {
       case "welcome":
@@ -178,6 +177,7 @@ const App: React.FC = () => {
             onPlay={handlePlay}
             onLevelSelect={handleLevelSelect}
             onDailyChallenge={handleDailyChallenge}
+            onOpenShop={handleOpenShop}
           />
         );
 
@@ -203,7 +203,9 @@ const App: React.FC = () => {
         return (
           <div style={{ position: "relative" }}>
             <GameScreen
-              key={`game-${screen.levelNum}-${screen.isDaily ? "daily" : "normal"}`}
+              key={`game-${screen.levelNum}-${
+                screen.isDaily ? "daily" : "normal"
+              }`}
               levelNum={screen.levelNum}
               isDaily={screen.isDaily}
               dailyTubes={screen.dailyTubes}
@@ -218,6 +220,8 @@ const App: React.FC = () => {
               musicEnabled={musicEnabled}
               onToggleSound={handleToggleSound}
               onToggleMusic={handleToggleMusic}
+              onOpenShop={handleOpenShop}
+              activeBackground={save.activeBackground}
             />
           </div>
         );
@@ -250,6 +254,8 @@ const App: React.FC = () => {
               musicEnabled={musicEnabled}
               onToggleSound={handleToggleSound}
               onToggleMusic={handleToggleMusic}
+              onOpenShop={handleOpenShop}
+              activeBackground={save.activeBackground}
             />
             <LevelFailedScreen
               onRetry={() =>
@@ -262,6 +268,15 @@ const App: React.FC = () => {
               hintsLeft={screen.hintsLeft}
             />
           </div>
+        );
+
+      case "shop":
+        return (
+          <ShopScreen
+            save={save}
+            onBack={() => setScreen({ type: "home" })}
+            onSaveUpdate={(updatedSave) => setSave(updatedSave)}
+          />
         );
 
       default:
