@@ -1,0 +1,690 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+    /* Bright sky background for cartoon feel */
+    --background: 0.88 0.06 235;
+    --foreground: 0.18 0.04 260;
+    --card: 0.96 0.02 230;
+    --card-foreground: 0.18 0.04 260;
+    --popover: 0.96 0.02 230;
+    --popover-foreground: 0.18 0.04 260;
+    /* Vibrant orange-yellow CTA primary */
+    --primary: 0.75 0.18 55;
+    --primary-foreground: 0.12 0.01 240;
+    /* Candy blue secondary */
+    --secondary: 0.58 0.18 250;
+    --secondary-foreground: 0.97 0 0;
+    --muted: 0.88 0.03 240;
+    --muted-foreground: 0.52 0.06 250;
+    /* Candy purple accent */
+    --accent: 0.62 0.22 305;
+    --accent-foreground: 0.97 0 0;
+    --destructive: 0.6 0.22 25;
+    --destructive-foreground: 0.97 0 0;
+    --border: 0.78 0.06 240;
+    --input: 0.88 0.04 240;
+    --ring: 0.75 0.18 55;
+    --chart-1: 0.78 0.2 75;
+    --chart-2: 0.65 0.2 148;
+    --chart-3: 0.6 0.22 305;
+    --chart-4: 0.6 0.2 250;
+    --chart-5: 0.72 0.18 45;
+    --sidebar: 0.92 0.04 230;
+    --sidebar-foreground: 0.18 0.04 260;
+    --sidebar-primary: 0.75 0.18 55;
+    --sidebar-primary-foreground: 0.12 0.01 240;
+    --sidebar-accent: 0.62 0.22 305;
+    --sidebar-accent-foreground: 0.97 0 0;
+    --sidebar-border: 0.78 0.06 240;
+    --sidebar-ring: 0.75 0.18 55;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Nunito", "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    overscroll-behavior: none;
+  }
+
+  button {
+    font-family: "Nunito", "Segoe UI", sans-serif;
+    cursor: pointer;
+  }
+}
+
+/* ============================================================
+   GAME BUTTONS — CARTOON STYLE
+   ============================================================ */
+
+.game-btn {
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.25);
+  font-weight: 900;
+  font-size: 16px;
+  font-family: "Fredoka One", "Nunito", sans-serif;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.game-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.35), transparent);
+  border-radius: 17px 17px 0 0;
+  pointer-events: none;
+}
+
+/* 3D bottom block shadow */
+.game-btn::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 3px;
+  right: 3px;
+  height: 6px;
+  border-radius: 0 0 18px 18px;
+  background: rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+  transition: height 0.12s ease, bottom 0.12s ease;
+}
+
+.game-btn:active {
+  transform: translateY(3px);
+  box-shadow: none !important;
+  animation-play-state: paused;
+}
+
+.game-btn:active::after {
+  height: 2px;
+  bottom: -2px;
+}
+
+.game-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-3px);
+}
+
+.game-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-xl {
+  padding: 17px 24px;
+  font-size: 24px;
+  letter-spacing: 2px;
+}
+
+.btn-lg {
+  padding: 14px 20px;
+  font-size: 17px;
+  letter-spacing: 1.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ffda44 0%, #ff9500 50%, #e8620a 100%);
+  color: #3d1a00;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 0 #bf5200, 0 8px 20px rgba(255, 140, 0, 0.5);
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #6ee86f 0%, #2ec135 50%, #1d9e26 100%);
+  color: #0a3d0d;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 0 #157019, 0 8px 20px rgba(46, 193, 53, 0.45);
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, #c47dff 0%, #8b4aef 50%, #7035d8 100%);
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 0 #5020b0, 0 8px 20px rgba(139, 74, 239, 0.5);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #62c8ff 0%, #2f86ff 50%, #1870ee 100%);
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 0 #0f55c0, 0 8px 20px rgba(47, 134, 255, 0.45);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ff7a8a 0%, #ff2d3d 100%);
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 0 #cc0010, 0 8px 20px rgba(255, 45, 61, 0.45);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.75);
+  color: #444;
+  border: 3px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================================
+   HUD BUTTONS — CARTOON STYLE
+   ============================================================ */
+
+.hud-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: 3px solid rgba(0, 0, 0, 0.22);
+  background: #fff;
+  color: #333;
+  font-weight: 800;
+  font-size: 14px;
+  font-family: "Fredoka One", "Nunito", sans-serif;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  position: relative;
+  white-space: nowrap;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hud-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.hud-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.hud-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Action-specific hud button styles */
+.hud-btn-action {
+  padding: 9px 18px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* Undo = orange */
+.hud-btn-undo {
+  background: linear-gradient(135deg, #ffb347 0%, #ff8800 100%);
+  color: #5a2800;
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 0 #b85e00, 0 6px 12px rgba(255, 136, 0, 0.35);
+}
+
+/* Hint = yellow */
+.hud-btn-hint {
+  background: linear-gradient(135deg, #ffe04f 0%, #ffc200 100%);
+  color: #5a3c00;
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 0 #b88a00, 0 6px 12px rgba(255, 194, 0, 0.35);
+}
+
+/* Stand = blue */
+.hud-btn-stand-add {
+  background: linear-gradient(135deg, #64ccff 0%, #2196f3 100%);
+  color: #002d6e;
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 0 #1256aa, 0 6px 12px rgba(33, 150, 243, 0.35);
+}
+
+.hud-btn-stand {
+  font-size: 13px;
+}
+
+.hud-btn-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff 0%, #ffe066 100%);
+  color: #222;
+  font-size: 11px;
+  font-weight: 900;
+  flex-shrink: 0;
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hud-btn-skip {
+  opacity: 0.8;
+  font-size: 12px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #555;
+}
+
+/* ============================================================
+   ICON BUTTON — CARTOON STYLE
+   ============================================================ */
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border: 3px solid rgba(0, 0, 0, 0.3);
+  background: #fff;
+  color: #333;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  font-family: "Nunito", sans-serif;
+  font-weight: 800;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2), 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.icon-btn:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 8px 14px rgba(0, 0, 0, 0.2);
+}
+
+.icon-btn:active {
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================
+   CARTOON PANEL
+   ============================================================ */
+
+.cartoon-panel {
+  background: #fff;
+  border: 3px solid rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 16px;
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.confetti-particle {
+  position: absolute;
+  top: -20px;
+  animation: confetti-fall linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   STAR PARTICLES — LARGER & MORE COLORFUL
+   ============================================================ */
+
+.star-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: sparkle-twinkle ease-in-out infinite;
+  pointer-events: none;
+}
+
+.star-particle-yellow {
+  background: radial-gradient(circle, #ffe566 0%, #ffcc00 40%, transparent 70%);
+  box-shadow: 0 0 6px rgba(255, 220, 0, 0.7);
+}
+
+.star-particle-pink {
+  background: radial-gradient(circle, #ff9de2 0%, #ff5fc7 40%, transparent 70%);
+  box-shadow: 0 0 6px rgba(255, 95, 199, 0.7);
+}
+
+.star-particle-blue {
+  background: radial-gradient(circle, #74d7ff 0%, #2bc3ff 40%, transparent 70%);
+  box-shadow: 0 0 6px rgba(43, 195, 255, 0.7);
+}
+
+.star-particle-green {
+  background: radial-gradient(circle, #7dff9b 0%, #22dd58 40%, transparent 70%);
+  box-shadow: 0 0 6px rgba(34, 221, 88, 0.6);
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
+/* ============================================================
+   ANIMATIONS — NUT & STAND
+   ============================================================ */
+
+@keyframes nut-lift {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: none;
+  }
+  60% {
+    transform: translateY(-14px) scale(1.12);
+  }
+  100% {
+    transform: translateY(-10px) scale(1.1);
+    filter: brightness(1.15);
+  }
+}
+
+.nut-lift {
+  animation: nut-lift 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes nut-drop {
+  0% {
+    transform: translateY(-18px) scale(1.1);
+  }
+  50% {
+    transform: translateY(5px) scale(0.94);
+  }
+  75% {
+    transform: translateY(-3px) scale(1.03);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.nut-drop {
+  animation: nut-drop 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes stand-glow-hint {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 170, 0, 1), 0 0 48px rgba(255, 170, 0, 0.45);
+  }
+}
+
+@keyframes stand-glow-hint-to {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(80, 255, 120, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(80, 255, 120, 1), 0 0 48px
+      rgba(80, 255, 120, 0.45);
+  }
+}
+
+@keyframes stand-glow-selected {
+  0%,
+  100% {
+    box-shadow: 0 0 14px rgba(255, 220, 50, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(255, 220, 50, 1), 0 0 56px rgba(255, 220, 50, 0.4);
+  }
+}
+
+/* ============================================================
+   ANIMATIONS — GENERAL
+   ============================================================ */
+
+@keyframes hint-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(255, 170, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(255, 170, 0, 0.9), 0 0 50px rgba(255, 170, 0, 0.4);
+  }
+}
+
+@keyframes tube-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-dot {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(-12px) scale(1.15);
+  }
+}
+
+@keyframes star-pop {
+  0% {
+    transform: scale(0) rotate(-20deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.star-pop {
+  animation: star-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes nut-place {
+  0% {
+    transform: translateY(-20px) scale(1.1);
+  }
+  60% {
+    transform: translateY(4px) scale(0.95);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.nut-place {
+  animation: nut-place 0.25s ease;
+}
+
+@keyframes float-cloud {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(12px);
+  }
+}
+
+@keyframes cartoon-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-8px) scale(1.04);
+  }
+  70% {
+    transform: translateY(-3px) scale(1.01);
+  }
+}
+
+/* ============================================================
+   APP ROOT
+   ============================================================ */
+
+.app-root {
+  min-height: 100dvh;
+  position: relative;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 400px) {
+  .game-btn {
+    font-size: 15px;
+    padding: 11px 16px;
+  }
+  .btn-xl {
+    font-size: 20px;
+    padding: 14px 20px;
+  }
+  .hud-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  .hud-btn-action {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+}
+
+/* ============================================================
+   BOLT ANIMATIONS
+   ============================================================ */
+
+@keyframes bolt-unscrew {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  40% {
+    transform: translateY(-8px) rotate(-180deg) scale(1.06);
+  }
+  100% {
+    transform: translateY(-20px) rotate(-360deg) scale(1.14);
+  }
+}
+
+@keyframes bolt-screwIn {
+  0% {
+    transform: translateY(-20px) rotate(0deg) scale(1.14);
+  }
+  60% {
+    transform: translateY(-4px) rotate(200deg) scale(1.04);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg) scale(1);
+  }
+}
